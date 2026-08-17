@@ -1,0 +1,48 @@
+<%- layout("../layouts/boilerplate") %>
+   
+    <div class="row mt-2">
+        <div class="col-8 offset-2">
+            <form action="/listing/<%= list._id %>?_method=PATCH" method="post">
+                 <h3>You Can Start Editing!</h3>
+                <div class="mb-3 mt-2">
+                    <br><br>
+                    <label class="form-label" for="title">Enter title</label>
+                    <input type="text" name="listing[title]" placeholder="Add a catchy title" class="form-control"
+                        value="<%= list.title %>">
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea name="listing[description]" placeholder="Enter description"
+                        class="form-control"><%= list.description %></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">Image</label>
+                    <input type="text" name="listing[image]" placeholder="Enter image URL" class="form-control"
+                        value="<%= list.image %>">
+
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="text" name="listing[price]" placeholder="Enter price" class="form-control"
+                            value="<%= list.price %>">
+                    </div>
+
+
+
+                    <div class="mb-3 col-md-8">
+                        <label for="country" class="form-label">Country</label>
+                        <input type="text" name="listing[country]" placeholder="E.g.: India" class="form-control"
+                            value="<%= list.country %>">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" name="listing[location]" placeholder="E.g. : Mumbai" class="form-control"
+                        value="<%= list.location %>">
+                </div>
+                <button class="btn  save-btn">SAVE</button>
+            </form>
+        </div>
+    </div>
+    <br><br>
