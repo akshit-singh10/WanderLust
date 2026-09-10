@@ -5,7 +5,7 @@ const path = require('path');
 const method_override = require('method-override');
 const wrapasync = require("./utils/wrapasync.js");
 const ExpressError = require("./utils/expresserror.js");
-const listingSchema = require('./schema.js');
+const {listingSchema,reviewSchema} = require('./schema.js');
 
 //validate listing
 const validateListing = (req,res,next) =>
@@ -14,6 +14,20 @@ const validateListing = (req,res,next) =>
     if(error)
     {
         let errmsg = error.details.map((el) => el.message ).join(",");
+        console.log(error);
+        throw new ExpressError(400,errmsg);
+    }
+    next();
+};
+
+//validate review
+const validateReview = (req,res,next) =>
+{
+    let {error} = reviewSchema.validate(req.body);
+    if(error)
+    {
+        let errmsg = error.details.map((el) => el.message ).join(",");
+        console.log(error);
         throw new ExpressError(400,errmsg);
     }
     next();
@@ -31,6 +45,7 @@ const mongo_url = 'mongodb://127.0.0.1:27017/WanderLust';
 
 //models
 const Listing = require("./models/listing.js");
+const Review = require("./models/reviews.js");
 
 //parse
 app.use(express.json());
@@ -80,7 +95,7 @@ app.get("/listing/new", (req, res) => {
 app.get("/listing/:id", async (req, res) => {
     let id = req.params.id;
 
-    const list = await Listing.findById(id);
+    const list = await Listing.findById(id).populate("reviews");
     res.render("listing/show.ejs", { list });
 });
 
@@ -121,6 +136,30 @@ app.delete("/listing/:id", async (req, res) => {
     console.log("DELETED\n", deletedList);
     res.redirect("/listing");
 });
+
+//review route
+app.post("/listing/:id/review",validateReview,wrapasync(async (req,res)=>
+{
+    let listing = await Listing.findById(req.params.id);
+    let newReview = new Review(req.body.review);
+
+    listing.reviews.push(newReview);
+
+    await newReview.save();
+    await listing.save();
+
+    res.redirect(`/listing/${listing._id}`);
+}));
+
+// delete review route
+app.delete("/listing/:id/reviews/:reviewId",wrapasync(async (req,res)=>
+{   
+    let {id,reviewId} = req.params;
+    await Listing.findByIdAndUpdate(id,{ $pull : {reviews : reviewId}});
+    await Review.findByIdAndDelete(reviewId);
+
+    res.redirect(`/listing/${id}`);
+}));
 
 
 // for every non existing route
