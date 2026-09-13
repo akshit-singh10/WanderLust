@@ -3,41 +3,44 @@ const app = express();
 const mongoose = require('mongoose');
 const path = require('path');
 const method_override = require('method-override');
-const wrapasync = require("./utils/wrapasync.js");
 const ExpressError = require("./utils/expresserror.js");
-const {listingSchema,reviewSchema} = require('./schema.js');
+const session = require("express-session");
+const flash = require("connect-flash");
 
-//validate listing
-const validateListing = (req,res,next) =>
-{
-    let {error} = listingSchema.validate(req.body);
-    if(error)
+
+//session options and define
+let sessionoption = {
+    secret : "mysupersecretcode",
+    resave : true,
+    saveUninitialized : true,
+    cookie :
     {
-        let errmsg = error.details.map((el) => el.message ).join(",");
-        console.log(error);
-        throw new ExpressError(400,errmsg);
+        expires : new Date(Date.now() + 7*24*60*60*1000),
+        maxAge :  7*24*60*60*1000,
+        httpOnly : true,
     }
-    next();
 };
 
-//validate review
-const validateReview = (req,res,next) =>
-{
-    let {error} = reviewSchema.validate(req.body);
-    if(error)
-    {
-        let errmsg = error.details.map((el) => el.message ).join(",");
-        console.log(error);
-        throw new ExpressError(400,errmsg);
-    }
-    next();
-};
+app.use(session(sessionoption));
 
+// flash
+app.use(flash());
+
+//middleware to access the flash
+app.use((req, res, next) => {
+    res.locals.successmsg = req.flash("success");
+    res.locals.errormsg = req.flash("error");
+    next();
+});
+
+//require routers
+const listings = require("./routes/listing.js");
+const reviews = require("./routes/review.js");
 
 const ejsMate = require('ejs-mate');
 app.engine('ejs', ejsMate);
 
-//
+//method-override
 app.use(method_override('_method'));
 
 // url 
@@ -65,6 +68,10 @@ app.get("/", (req, res) => {
     res.send("hi i am root");
 });
 
+//route middlewares
+app.use("/listing",listings);
+app.use("/listing/:id/reviews",reviews);
+
 // app.get("/testlisting",(req,res)=>
 // {
 //     let SampleListing = new Listing({
@@ -79,88 +86,6 @@ app.get("/", (req, res) => {
 //         res.send("Added");
 //     }).catch((err) => { throw err});
 // });
-
-
-app.get("/listing", async (req, res) => {
-    const allList = await Listing.find({});
-    res.render("listing/index.ejs", { allList });
-});
-
-// new route
-app.get("/listing/new", (req, res) => {
-    res.render("listing/new.ejs");
-});
-
-//show specific list
-app.get("/listing/:id", async (req, res) => {
-    let id = req.params.id;
-
-    const list = await Listing.findById(id).populate("reviews");
-    res.render("listing/show.ejs", { list });
-});
-
-
-
-// create new route
-app.post("/listing",validateListing, wrapasync(async (req, res, next) => {
-    // let {title,description,price,location,country} = req.body;
-
-    let listing = new Listing(req.body.listing); // now listing is the direct document
-
-    
-
-    await listing.save();
-    res.redirect("/listing");
-
-}));
-
-//edit or update
-
-app.get("/listing/:id/edit",validateListing, async (req, res) => {
-    let editList = await Listing.findById(req.params.id);
-    res.render("listing/edit.ejs", { list: editList });
-});
-
-//update
-app.patch("/listing/:id", async (req, res) => {
-    let id = req.params.id;
-    let listing = req.body.listing;
-    await Listing.findOneAndUpdate({ _id: id }, { ...listing });
-    console.log("Edited");
-    res.redirect(`/listing/${id}`);
-});
-
-//delete
-app.delete("/listing/:id", async (req, res) => {
-    let deletedList = await Listing.findByIdAndDelete(req.params.id);
-    console.log("DELETED\n", deletedList);
-    res.redirect("/listing");
-});
-
-//review route
-app.post("/listing/:id/review",validateReview,wrapasync(async (req,res)=>
-{
-    let listing = await Listing.findById(req.params.id);
-    let newReview = new Review(req.body.review);
-
-    listing.reviews.push(newReview);
-
-    await newReview.save();
-    await listing.save();
-
-    res.redirect(`/listing/${listing._id}`);
-}));
-
-// delete review route
-app.delete("/listing/:id/reviews/:reviewId",wrapasync(async (req,res)=>
-{   
-    let {id,reviewId} = req.params;
-    await Listing.findByIdAndUpdate(id,{ $pull : {reviews : reviewId}});
-    await Review.findByIdAndDelete(reviewId);
-
-    res.redirect(`/listing/${id}`);
-}));
-
 
 // for every non existing route
 app.all("/*abc", (req, res, next) => {
