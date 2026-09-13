@@ -19,16 +19,16 @@ If data is out of constraints, then throws error
 
 Here now no specific user is involved , anyone who is accessing this can delete or add reviews and same goes for listing.
 
-# EXPRESS-ROUTER
+## EXPRESS-ROUTER
 ### app.js code was quite bulky and difficult to read so I use Express-router for simplification and readability of the code
 
-# Cookies
+## Cookies
 ### Learned about cookies, signed and unsigned
 
-# EXPRESS-SESSION
+## EXPRESS-SESSION
 ### making our session stateful. When a session is created then its ID is stored as a cookie which can be used to get data from the session.
 
-# Connect-flash
+## Connect-flash
 ### It's a middleware used to display one time message and the same message won't be displayed if we refresh again, can change expiry date of cookies and all.
 
 ## In-Project :
