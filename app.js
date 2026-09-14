@@ -13,15 +13,16 @@ const isLoggedIn = require("./middleware.js");
 
 
 //session options and define
+require("dotenv").config();
+// ...
 let sessionoption = {
-    secret : "mysupersecretcode",
-    resave : true,
-    saveUninitialized : true,
-    cookie :
-    {
-        expires : new Date(Date.now() + 7*24*60*60*1000),
-        maxAge :  7*24*60*60*1000,
-        httpOnly : true,
+    secret: process.env.SECRET || "fallback-dev-secret",
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
     }
 };
 
@@ -69,7 +70,7 @@ app.engine('ejs', ejsMate);
 app.use(method_override('_method'));
 
 // url 
-const mongo_url = 'mongodb://127.0.0.1:27017/WanderLust';
+const mongo_url = process.env.MONGO_URL;;
 
 //models
 const Listing = require("./models/listing.js");
