@@ -6,6 +6,10 @@ const method_override = require('method-override');
 const ExpressError = require("./utils/expresserror.js");
 const session = require("express-session");
 const flash = require("connect-flash");
+const passport = require("passport");
+const localStrategy = require("passport-local");
+const  User = require("./models/user.js");
+const isLoggedIn = require("./middleware.js");
 
 
 //session options and define
@@ -26,16 +30,37 @@ app.use(session(sessionoption));
 // flash
 app.use(flash());
 
+//Configuring strategy
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 //middleware to access the flash
 app.use((req, res, next) => {
     res.locals.successmsg = req.flash("success");
     res.locals.errormsg = req.flash("error");
+    res.locals.currUser = req.user;
     next();
 });
 
+app.get("/demouser",async (req,res)=>
+{
+    let fakeuser = new User({
+        email : "student@gmail.com",
+        username : "akshitsingh"
+    });
+
+    let registereduser = await User.register(fakeuser,"helloword");
+    res.send(registereduser);
+});
+
 //require routers
-const listings = require("./routes/listing.js");
-const reviews = require("./routes/review.js");
+const listingRouter = require("./routes/listing.js");
+const reviewRouter = require("./routes/review.js");
+const userRouter = require("./routes/user.js");
 
 const ejsMate = require('ejs-mate');
 app.engine('ejs', ejsMate);
@@ -69,8 +94,9 @@ app.get("/", (req, res) => {
 });
 
 //route middlewares
-app.use("/listing",listings);
-app.use("/listing/:id/reviews",reviews);
+app.use("/listing",listingRouter);
+app.use("/listing/:id/review",reviewRouter);
+app.use("/",userRouter);
 
 // app.get("/testlisting",(req,res)=>
 // {

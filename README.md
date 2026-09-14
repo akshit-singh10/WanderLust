@@ -35,6 +35,37 @@ Here now no specific user is involved , anyone who is accessing this can delete 
 #### I have used Connect-flash for displaying one time messages when the user updates , deletes, creates a listing And also for writing and deleting reviews. Additionally, if the id doesn't exist as requested then it redirects to the homepage,too, with a flash message!
 
 
+# Authentication and Authorization
 
-    
+## Authentication
+### sub topics:
+    - Hashing the password
+    - passport middleware
+    - passport-local-mongoose
+###### Learnt about hashing the password, using passport middleware, and passport-local-mongoose for the project because mongoose is used for the database.
+- Created signup and login for users
+- Added isAuthenticated() to check whether the user is logged in or not! to create listing
+- Similarly logout is executed
+- The navbar is also additioned with signup and login if not logged in, and logout option if logged in already
 
+## In-Project (Authentication) :
+#### use of res.locals for ejs template
+Used res.locals so that flash messages and current user info are available directly in the ejs templates.
+
+#### Redirecting after login to the requested page
+Redirecting after login to the requested page and all for UX — adding a middleware for post login page so that it can check that after login, to go to the page the login request came from.
+
+## Authorization
+### sub topics:
+    - Listing ownership
+    - Review ownership
+    - Nested populating
+###### For authorization, added listing owners in the schema of listing, and it stores the id of the user logged in.
+- Made visibility for edit and delete options of the listing only for the owner, others is visible
+- On server side also made a middleware which checks the ownership of the listing and only then it can cause the change
+- Same goes for reviews, only its author can delete it but it can be seen and also added new by logged in user
+- Learnt about nested populating
+- The middleware used for checking if the deleting user is the review's author or not is isReviewAuthor
+
+## In-Project (Authorization) :
+#### For all these checks, whether author or owner, is the same as review's or listing's, is compared via id.
