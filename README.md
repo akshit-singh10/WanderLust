@@ -1,6 +1,15 @@
 # WanderLust
 Full-stack Airbnb clone with listings, auth, reviews &amp; maps — built as a learning project, not a 1:1 copy.
 
+# Styling and Basic Setup
+### sub topics:
+    - EJS templating with ejs-mate
+    - Bootstrap for styling
+    - Basic CRUD for listings
+    - Mongoose schema and models
+###### Before error handling, first set up the basic project structure — Node.js and Express server, EJS templating with ejs-mate for layouts, and Bootstrap for styling the pages. Made the basic CRUD (create, read, update, delete) for listings, and Mongoose schema and model for storing listing data in MongoDB.
+ 
+
 # Added Error handling middlewares 
 ### Learning 
 -Validation of form input by user
