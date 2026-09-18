@@ -112,3 +112,28 @@ multer has to run before form validation, since validation reads req.body, which
 
 #### Deleting images too
 When a listing is deleted, its image is also deleted from Cloudinary using the saved filename, so old images don't just pile up there unused.
+
+## Maps and Geocoding
+
+- Added a Mapbox map to each listing's show page to display its location.
+- Used Mapbox Geocoding API to convert the location into coordinates.
+- Stored the coordinates using GeoJSON and added markers, controls, and popups.
+- Coordinates are generated when the listing is created and saved in the database.
+
+## Filter Bar
+
+- Added a horizontally scrollable filter bar with different listing categories.
+- Added arrows for easier scrolling.
+- Filtering functionality will be added later.
+
+## GST Toggle
+
+- Added a "Display Total after Taxes" toggle near the filter bar.
+- Shows or hides the `+18% GST` information next to listing prices.
+- Currently works only as a display feature.
+
+## Search UI
+
+- Added a search bar to the navbar with an input field and button.
+- Used Bootstrap 5 classes for layout and spacing.
+- Actual search functionality will be added later.
