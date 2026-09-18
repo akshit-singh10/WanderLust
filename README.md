@@ -78,3 +78,37 @@ Redirecting after login to the requested page and all for UX — adding a middle
 
 ## In-Project (Authorization) :
 #### For all these checks, whether author or owner, is the same as review's or listing's, is compared via id.
+
+# MVC Pattern
+### sub topics:
+    - Separation of routes, controllers, models
+###### Refactored the project into MVC structure. Moved all logic (creating listings, rendering, etc.) out of routes and into separate controller files. Routes now only map a path + method to a controller function.
+
+## In-Project (MVC) :
+#### routes/ only calls controllers/
+Learnt that requiring a model in one file doesn't make it available in another file — each file needs its own require, since every JS file has its own scope.
+
+# router.route()
+###### Grouped routes sharing the same path using router.route("/").get(...).post(...) instead of writing them as separate lines. Did the same for "/:id" (GET/PATCH/DELETE). Just for readability, no behavior change.
+
+# Star Rating
+###### Changed the review rating input from a plain number/range field to a clickable star rating. Only the UI changed — still saves as a Number in the schema.
+
+# Image Upload
+### sub topics:
+    - Multer
+    - Cloudinary
+    - multer-storage-cloudinary
+###### Earlier, listing images were just a pasted URL. Switched to real file upload from the user's device.
+- Form uses enctype="multipart/form-data" to send the file
+- Added multer to parse the file and form fields (without it, req.body stays empty on file uploads)
+- Set up a Cloudinary account, added cloud_name, api_key, api_secret to .env
+- Used multer-storage-cloudinary so multer uploads straight to Cloudinary instead of local disk
+- image field in the schema changed from a String to { url, filename } — url is shown on the page, filename (Cloudinary's id) is kept for deleting the image later
+
+## In-Project (Image Upload) :
+#### Middleware order matters
+multer has to run before form validation, since validation reads req.body, which only exists after multer parses the file upload.
+
+#### Deleting images too
+When a listing is deleted, its image is also deleted from Cloudinary using the saved filename, so old images don't just pile up there unused.

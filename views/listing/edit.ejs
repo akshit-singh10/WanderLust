@@ -2,7 +2,7 @@
 
 <div class="row mt-2">
     <div class="col-8 offset-2">
-        <form action="/listing/<%= list._id %>?_method=PATCH" method="post" novalidate class="needs-validation">
+        <form action="/listing/<%= list._id %>?_method=PATCH" method="post" novalidate class="needs-validation" enctype="multipart/form-data">
             <h3>You Can Start Editing!</h3>
             <div class="mb-3 mt-2">
                 <br><br>
@@ -22,10 +22,15 @@
             </div>
 
             <div class="mb-3">
-                <label for="image" class="form-label">Image</label>
-                <input type="text" name="listing[image]" id="image" placeholder="Enter image URL" class="form-control" required
-                    value="<%= list.image %>">
-            </div>
+            <h3>Original Listing image</h3>
+            <br>
+            <img src="<%= originalImageUrl %>" style="height: 23vh;" >
+           </div>
+
+           <div class="mb-3">
+            <label for="" class="form-label">Upload new Image</label>
+                <input type="file" name="listing[image]" id="image" placeholder="Enter image URL" class="form-control">
+           </div>      
 
             <div class="row">
                 <div class="mb-3 col-md-3">

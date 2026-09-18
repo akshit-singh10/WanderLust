@@ -121,7 +121,7 @@ body
 }
 .card-img-overlay:hover
 {
-    opacity: 0.2;
+    opacity: 0.4;
     background-color: #ebebeb;
 }
 
@@ -152,3 +152,12 @@ body
     padding-left: 0;
     padding-right: 0;
 }
+
+
+
+/* map style */
+/* body { margin: 0; padding: 0; } */
+#map { 
+   height: 400px;
+   width: 80vh;
+ }

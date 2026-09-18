@@ -1,3 +1,8 @@
+if (process.env.NODE_ENV != "production") {
+    //session options and define
+    require("dotenv").config();
+}
+
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
@@ -8,12 +13,11 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
 const localStrategy = require("passport-local");
-const  User = require("./models/user.js");
+const User = require("./models/user.js");
 const isLoggedIn = require("./middleware.js");
 
 
-//session options and define
-require("dotenv").config();
+
 // ...
 let sessionoption = {
     secret: process.env.SECRET || "fallback-dev-secret",
@@ -47,14 +51,13 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get("/demouser",async (req,res)=>
-{
+app.get("/demouser", async (req, res) => {
     let fakeuser = new User({
-        email : "student@gmail.com",
-        username : "akshitsingh"
+        email: "student@gmail.com",
+        username: "akshitsingh"
     });
 
-    let registereduser = await User.register(fakeuser,"helloword");
+    let registereduser = await User.register(fakeuser, "helloword");
     res.send(registereduser);
 });
 
@@ -90,14 +93,14 @@ app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect(mongo_url).then(() => console.log("Mongo Connection Established")).catch((err) => { throw err });
 
-app.get("/", (req, res) => {
-    res.send("hi i am root");
-});
+// app.get("/", (req, res) => { removed the root page
+//     res.send("hi i am root");
+// });
 
 //route middlewares
-app.use("/listing",listingRouter);
-app.use("/listing/:id/review",reviewRouter);
-app.use("/",userRouter);
+app.use("/listing", listingRouter);
+app.use("/listing/:id/review", reviewRouter);
+app.use("/", userRouter);
 
 // app.get("/testlisting",(req,res)=>
 // {

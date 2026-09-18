@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Review = require("./reviews.js");
+const { Strin } = require('joi');
+const { cloudinary } = require("../cloudConfig.js");
+
 
 const listingSchema = new Schema({
     title:
@@ -11,9 +14,8 @@ const listingSchema = new Schema({
     description: String,
     image:
     {
-        type: String,
-        default: "https://images.unsplash.com/photo-1786658054271-e6885f2cab30?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        set: (v) => v === "" ? "https://images.unsplash.com/photo-1786658054271-e6885f2cab30?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" : v,
+        url: String,
+        filename: String
     },
     price: Number,
     location: String,
@@ -25,21 +27,51 @@ const listingSchema = new Schema({
             ref: "Review"
         }
     ],
-    owner : 
+    owner:
     {
-        type : Schema.Types.ObjectId,
-        ref : "User"
+        type: Schema.Types.ObjectId,
+        ref: "User"
+    },
+    geometry: {
+        type: {
+            type: String, // Don't do `{ location: { type: String } }`
+            enum: ['Point'], // 'location.type' must be 'Point'
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    },
+    category: {
+        type: String,
+        enum: [
+            "trending",
+            "rooms",
+            "iconic",
+            "mountains",
+            "castles",
+            "swimming",
+            "camping",
+            "farms",
+            "arctic",
+            "domes",
+            "boats",
+            "others"
+        ],
+        // required: true  // uncomment once all listings have a category
     }
 });
 
-listingSchema.post("findOneAndDelete",async (list)=>
-{
-    if(!list)
-    {
+listingSchema.post("findOneAndDelete", async (list) => {
+    if (!list) {
         return;
     }
-    await Review.deleteMany({_id :{$in : list.reviews} });
-});     
+    if (list.image && list.image.filename) {
+        await cloudinary.uploader.destroy(list.image.filename);
+    }
+    await Review.deleteMany({ _id: { $in: list.reviews } });
+});
 
 const Listing = mongoose.model("Listing", listingSchema);
 module.exports = Listing;
