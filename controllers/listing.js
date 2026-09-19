@@ -4,9 +4,9 @@ const mapToken = process.env.MAP_TOKEN;
 const geocodingClient = new mbxGeocoding({ accessToken: mapToken });
 
 module.exports.index = async (req, res) => {  // /listing route (all listing)
-    const allList = await Listing.find({});
+    const listings = await Listing.find({});
     // res.locals.successmsg = req.flash("success");//
-    res.render("listing/index.ejs", { allList });
+    res.render("listing/index.ejs", { listings });
 };
 
 module.exports.renderNewForm = (req, res) => {
@@ -42,7 +42,7 @@ module.exports.createListing = async (req, res, next) => {
         limit: 1
     }).send();
 
-    
+
     newlisting.owner = req.user._id;
 
     //geoJson
@@ -100,4 +100,34 @@ module.exports.deleteListing = async (req, res) => {
     req.flash("success", "List Deleted!");
     console.log("DELETED\n", deletedList);
     res.redirect("/listing");
-};    
+};
+
+module.exports.filterRequest = async (req, res) => {
+    const { category } = req.params;
+    if (category == 'all') {
+        return res.redirect("/listing")
+    }
+    const listings = await Listing.find({ category: category });
+
+
+    res.render("listing/index.ejs", { listings });
+};
+
+module.exports.searchfilter = async (req, res) => {
+    let { search } = req.query;
+    if (!search || search.trim() === "") {
+        req.flash("error", "Please enter something to search for!");
+        return res.redirect("/listing");
+    }
+    let listings = await Listing.find({
+        $or: [
+            { title: { $regex: search, $options: "i" } },
+            { location: { $regex: search, $options: "i" } },
+            { country: { $regex: search, $options: "i" } },
+            { category: { $regex: search, $options: "i" } },
+        ],
+    });
+
+    res.render("listing/index.ejs", { listings });
+
+}

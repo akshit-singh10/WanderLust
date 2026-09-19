@@ -57,8 +57,8 @@ const listingSchema = new Schema({
             "arctic",
             "domes",
             "boats",
-            "others"
-        ],
+            "others",
+        ]
         // required: true  // uncomment once all listings have a category
     }
 });

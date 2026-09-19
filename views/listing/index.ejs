@@ -82,6 +82,10 @@
             <p class="arrows"><i class="fa-solid fa-caret-left"></i></p>
             <div class="filters-scroll">
                 <div class="filter">
+                    <div><i class="fa-brands fa-untappd"></i></div>
+                    <p>All</p>
+                </div>
+                <div class="filter">
                     <div><i class="fa-solid fa-fire"></i></div>
                     <p>Trending</p>
                 </div>
@@ -124,15 +128,6 @@
                 </div>
 
                 <div class="filter">
-                    <div><i class="fa-solid fa-cow"></i></div>
-                    <p>Farms</p>
-                </div>
-
-                <div class="filter">
-                    <div><i class="fa-regular fa-snowflake"></i></div>
-                    <p>Arctic</p>
-                </div>
-                <div class="filter">
                     <div><i class="fa-solid fa-landmark-dome"></i></div>
                     <p>Domes</p>
                 </div>
@@ -140,6 +135,10 @@
                 <div class="filter">
                     <div><i class="fa-solid fa-sailboat"></i></div>
                     <p>Boats</p>
+                </div>
+                <div class="filter">
+                    <div><i class="fa-solid fa-meteor"></i></div>
+                    <p>Others</p>
                 </div>
             </div>
             <p class="arrows"><i class="fa-solid fa-caret-right"></i></p>
@@ -153,13 +152,13 @@
         </div>
 
         <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
-            <% for(let list of allList) { %>
+            <% for(let list of listings) { %>
                 <a href="/listing/<%= list._id %>" class="listing-link">
                     <div class="card col listing-card">
                         <img src="<%= list.image.url %>" class="card-img-top" alt="Listing Image"
                             style="height : 20rem;">
                         <div class="card-img-overlay">
-                            <%= list.title %> 
+                            <%= list.title %>
                         </div>
                         <div class="card-body">
                             <p class="card-text">
@@ -167,8 +166,15 @@
                                     <%= list.title %>
                                 </b>
                                 <br>
-                                &#8377 <%= list.price ? list.price.toLocaleString("en-IN") : "N/A" %> /night
-                                    <i class="tax-info"> &nbsp; &nbsp; + 18% GST</i>
+                            <div class="price">
+                                <p class="normal-price">&#8377 <%= list.price ? list.price.toLocaleString("en-IN")
+                                        : "N/A" %> /night</p>
+                                <p class="tax-info">
+                                    &nbsp; &nbsp;
+                                    &#8377 <%= list.price ? (list.price * 1.18).toLocaleString("en-IN") : "N/A" %>
+                                        /night (GST incl.)
+                                </p>
+                            </div>
                             </p>
                         </div>
                     </div>
@@ -181,12 +187,47 @@
     <script>
         let toggle = document.querySelector("#flexSwitchCheckDefault");
         toggle.addEventListener('click', () => {
-            let taxes = document.getElementsByClassName("tax-info");
-            for (let info of taxes) {
-                if (info.style.display !== 'inline')
-                    info.style.display = 'inline';
-                else
-                    info.style.display = 'none';
+            let normalPrices = document.querySelectorAll(".normal-price");
+            let taxPrices = document.querySelectorAll(".tax-info");
+
+            for (let i = 0; i < normalPrices.length; i++) {
+                if (toggle.checked) {
+                    normalPrices[i].style.display = "none";
+                    taxPrices[i].style.display = "inline";
+                } else {
+                    normalPrices[i].style.display = "inline";
+                    taxPrices[i].style.display = "none";
+                }
             }
         });
+
+        let filters = document.querySelectorAll(".filter");
+        for (let filter of filters) {
+
+            if (window.location.pathname == '/listing') {
+                filters[0].style.opacity = 1;
+                filters[0].style.transform = 'scale(1.2)';
+                filters[0].style.marginLeft = '1rem';
+            }
+
+            let category = filter.querySelector("p").innerText.toLowerCase();
+
+            if (window.location.pathname === `/listing/filter/${category}`) {
+                filter.style.scale = "1.2";
+                filter.style.opacity = 1;
+            }
+            filter.addEventListener('click', () => {
+
+                let newUrl = window.location.origin + `/listing/filter/${category}`;
+                if (window.location.href === newUrl) {
+                    return;
+                }
+                if (category == 'all') {
+                    window.location.href = "/listing"; // all listing/ explore
+                    return;
+                }
+                window.location.href = newUrl;
+            });
+        }
+
     </script>

@@ -137,3 +137,26 @@ When a listing is deleted, its image is also deleted from Cloudinary using the s
 - Added a search bar to the navbar with an input field and button.
 - Used Bootstrap 5 classes for layout and spacing.
 - Actual search functionality will be added later.
+
+## Category Field
+
+- Added a `category` field to the listing schema (Trending, Rooms, Iconic, Mountains, Castles, Swimming, Camping, Farms, Arctic, Domes, Boats, Others).
+- Restricted values using Mongoose `enum`.
+- Added a category dropdown to the new/edit listing forms.
+- Had to separately add `category` to the Joi schema — Joi doesn't validate a field just because Mongoose knows about it, was throwing "not allowed" error until added.
+- Made it required on both Mongoose and the HTML form.
+
+## Filter Bar
+
+- Filter bar is now fully functional — clicking a category filters listings by it.
+- Added route `/listing/filter/:category`, queries `Listing.find({ category })`.
+- "All" resets back to `/listing`.
+- Active filter is detected from the URL and highlighted (scale + opacity).
+
+## Search
+
+- Search bar is now functional.
+- Added route `/listing/searchfilter`, reads `req.query.search`.
+- Used MongoDB `$or` to match against title, location, country, category.
+- Used `$regex` for partial match, `$options: "i"` for case-insensitive.
+- Empty search redirects back to `/listing` with a flash message.
