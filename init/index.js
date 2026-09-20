@@ -18,7 +18,7 @@ mongoose.connect(db_url).then(() => console.log("Mongo Connection Established"))
 
 const initDB = async () => {
     await Listing.deleteMany({});
-    intidata.data = intidata.data.map((obj) => ({ ...obj, owner: "6aa68df236bcca397c4e94fc" }));
+    intidata.data = intidata.data.map((obj) => ({ ...obj, owner: "6aaf829ee587f55cbecf99a8" }));
 
      for (let listing of intidata.data) {
         let response = await geocodingClient
