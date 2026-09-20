@@ -10,16 +10,37 @@ const path = require('path');
 const method_override = require('method-override');
 const ExpressError = require("./utils/expresserror.js");
 const session = require("express-session");
+const {MongoStore} = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const localStrategy = require("passport-local");
 const User = require("./models/user.js");
 const isLoggedIn = require("./middleware.js");
 
+// url 
+// const mongo_url = process.env.MONGO_URL;
+const db_url = process.env.ATLASDB_URL;
+
 
 
 // ...
+
+const store = MongoStore.create({
+    mongoUrl : db_url,
+    crypto :
+    {
+        secret :  process.env.SECRET || "fallback-dev-secret"
+    },
+    touchAfter : 24*3600
+});
+
+store.on('error',()=>
+{
+    console.log("Error in MONGO SESSION STORE ",error);
+});
+
 let sessionoption = {
+    store,
     secret: process.env.SECRET || "fallback-dev-secret",
     resave: true,
     saveUninitialized: true,
@@ -72,12 +93,12 @@ app.engine('ejs', ejsMate);
 //method-override
 app.use(method_override('_method'));
 
-// url 
-const mongo_url = process.env.MONGO_URL;;
+
 
 //models
 const Listing = require("./models/listing.js");
 const Review = require("./models/reviews.js");
+const { error } = require("console");
 
 //parse
 app.use(express.json());
@@ -91,8 +112,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect(mongo_url).then(() => console.log("Mongo Connection Established")).catch((err) => { throw err });
-
+mongoose.connect(db_url, { family: 4 }).then(() => console.log("Mongo Connection Established")).catch((err) => { throw err });
 // app.get("/", (req, res) => { removed the root page
 //     res.send("hi i am root");
 // });

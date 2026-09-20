@@ -160,3 +160,15 @@ When a listing is deleted, its image is also deleted from Cloudinary using the s
 - Used MongoDB `$or` to match against title, location, country, category.
 - Used `$regex` for partial match, `$options: "i"` for case-insensitive.
 - Empty search redirects back to `/listing` with a flash message.
+
+
+## Deployment
+
+Wanderlust is deployed using MongoDB Atlas (cloud database) and Render (hosting), with session data persisted via connect-mongo.
+
+### 1. MongoDB Atlas Setup
+
+1. Create a free cluster at MongoDB Atlas (https://www.mongodb.com/cloud/atlas).
+2. Under Database Access, create a database user with a username/password.
+3. Under Network Access, allow access from anywhere (0.0.0.0/0) so Render can connect.
+4. Get your connection string from Connect > Drivers, it looks like:
