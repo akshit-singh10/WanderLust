@@ -136,6 +136,9 @@ app.use("/", userRouter);
 //         res.send("Added");
 //     }).catch((err) => { throw err});
 // });
+app.get("/", (req, res) => {
+    res.redirect("/listings");
+});
 
 // for every non existing route
 app.all("/*abc", (req, res, next) => {

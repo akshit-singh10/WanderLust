@@ -11,9 +11,9 @@ const mapToken = process.env.MAP_TOKEN;
 const geocodingClient = new mbxGeocoding({ accessToken: mapToken });
 
 // url 
-const mongo_url = 'mongodb://127.0.0.1:27017/WanderLust';
+const db_url = process.env.ATLASDB_URL;
 
-mongoose.connect(mongo_url).then(() => console.log("Mongo Connection Established")).catch((err) => { throw err });
+mongoose.connect(db_url).then(() => console.log("Mongo Connection Established")).catch((err) => { throw err });
 
 
 const initDB = async () => {
