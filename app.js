@@ -137,7 +137,7 @@ app.use("/", userRouter);
 //     }).catch((err) => { throw err});
 // });
 app.get("/", (req, res) => {
-    res.redirect("/listings");
+    res.redirect("/listing");
 });
 
 // for every non existing route
